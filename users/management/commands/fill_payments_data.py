@@ -10,10 +10,10 @@ class Command(BaseCommand):
         payment_to_fill = []
 
         for user in User.objects.all():
-            payment_to_fill.append(Payment(user=user, lesson=Lesson.objects.get(pk=1),
-                                           payment_amount=1000, payment_method='cash'))
+            payment_to_fill.append(Payment(user=user, lesson=Lesson.objects.get(pk=2),
+                                           payment_amount=75_000, payment_method='cash'))
         for user in User.objects.all():
-            payment_to_fill.append(Payment(user=user, course=Course.objects.get(pk=1),
-                                           payment_amount=20000, payment_method='transfer_to_account'))
+            payment_to_fill.append(Payment(user=user, course=Course.objects.get(pk=2),
+                                           payment_amount=125_000, payment_method='transfer_to_account'))
 
         Payment.objects.bulk_create(payment_to_fill)
