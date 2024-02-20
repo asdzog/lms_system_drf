@@ -6,9 +6,8 @@ from courses.models import Course, Lesson
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
 
-    @staticmethod
-    def get_lessons_count(obj):
-        return obj.lessons.count()
+    def get_lessons_count(self, obj):
+        return Lesson.objects.filter(course=obj.id).count()
 
     class Meta:
         model = Course
