@@ -8,7 +8,12 @@ from courses.serializers import CourseSerializer, LessonSerializer
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
-    queryset = Course.objects.all()
+
+    def get_queryset(self):
+        queryset = Course.objects.all()
+        if self.request.user.groups.filter(name='moderators').exists():
+            return queryset
+        return queryset.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
         new_course = serializer.save()
@@ -29,11 +34,20 @@ class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
 
+    def perform_create(self, serializer):
+        new_lesson = serializer.save()
+        new_lesson.owner = self.request.user
+        new_lesson.save()
+
 
 class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
-    queryset = Lesson.objects.all()
-    permission_classes = [IsOwner | IsModerator]
+
+    def get_queryset(self):
+        queryset = Lesson.objects.all()
+        if self.request.user.groups.filter(name='moderators').exists():
+            return queryset
+        return queryset.filter(owner=self.request.user)
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
