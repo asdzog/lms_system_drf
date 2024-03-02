@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -26,14 +26,14 @@ class CourseViewSet(viewsets.ModelViewSet):
         new_course.owner = self.request.user
         new_course.save()
 
-    def get_permissions(self):
-        if self.action in ('create', ):
-            self.permission_classes = [IsAuthenticated, ~IsModerator]
-        elif self.action in ('list', 'retrieve', 'update', 'partial_update'):
-            self.permission_classes = [IsAuthenticated, IsModerator | IsOwner]
-        elif self.action in ('destroy', ):
-            self.permission_classes = [IsAuthenticated, IsOwner, ~IsModerator]
-        return [permission() for permission in self.permission_classes]
+    # def get_permissions(self):
+    #     if self.action in ('create', ):
+    #         self.permission_classes = [IsAuthenticated, ~IsModerator]
+    #     elif self.action in ('list', 'retrieve', 'update', 'partial_update'):
+    #         self.permission_classes = [IsAuthenticated, IsModerator | IsOwner]
+    #     elif self.action in ('destroy', ):
+    #         self.permission_classes = [IsAuthenticated, IsOwner, ~IsModerator]
+    #     return [permission() for permission in self.permission_classes]
 
     @action(detail=True, methods=['get'])
     def course_detail(self, request, pk):
@@ -48,7 +48,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
-    permission_classes = [IsAuthenticated, ~IsModerator]
+    permission_classes = [AllowAny]  # for testing mode
+    # permission_classes = [IsAuthenticated, ~IsModerator]  # for usual mode
 
     def perform_create(self, serializer):
         new_lesson = serializer.save()
