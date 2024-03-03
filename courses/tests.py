@@ -1,6 +1,3 @@
-import json
-
-from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
@@ -101,3 +98,25 @@ class LessonTestCase(APITestCase):
             2
         )
 
+    def test_update_lesson(self):
+        """Test of updating a lesson"""
+        new_description = 'updated_description'
+        data = {
+            'lesson_name': 'TestUpdate',
+            'lesson_description': new_description,
+            'video_url': self.lesson.video_url,
+            'course': self.course.id,
+            'owner': self.user.id
+        }
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.put(
+            f'/lesson/update/{self.lesson.id}/',
+            data=data
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK
+        )
