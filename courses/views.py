@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from courses.models import Course, Lesson, Subscription
 from courses.paginators import CoursesPagination
 from users.permissions import IsModerator, IsOwner
-from courses.serializers import CourseSerializer, LessonSerializer
+from courses.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -26,20 +26,21 @@ class CourseViewSet(viewsets.ModelViewSet):
         new_course.owner = self.request.user
         new_course.save()
 
-    # def get_permissions(self):
-    #     if self.action in ('create', ):
-    #         self.permission_classes = [IsAuthenticated, ~IsModerator]
-    #     elif self.action in ('list', 'retrieve', 'update', 'partial_update'):
-    #         self.permission_classes = [IsAuthenticated, IsModerator | IsOwner]
-    #     elif self.action in ('destroy', ):
-    #         self.permission_classes = [IsAuthenticated, IsOwner, ~IsModerator]
-    #     return [permission() for permission in self.permission_classes]
+    def get_permissions(self):
+        if self.action in ('create', ):
+            self.permission_classes = [IsAuthenticated, ~IsModerator]
+        elif self.action in ('list', 'retrieve', 'update', 'partial_update'):
+            self.permission_classes = [IsAuthenticated, IsModerator | IsOwner]
+        elif self.action in ('destroy', ):
+            self.permission_classes = [IsAuthenticated, IsOwner, ~IsModerator]
+        return [permission() for permission in self.permission_classes]
 
     @action(detail=True, methods=['get'])
     def course_detail(self, request, pk):
         course = self.get_object()
         subscribed = course.subscriptions.filter(
-            user=request.user).exists() if request.user.is_authenticated else False
+            user=request.user
+        ).exists() if request.user.is_authenticated else False
         serializer = self.get_serializer(course)
         data = serializer.data
         data['subscribed'] = subscribed
@@ -86,6 +87,9 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
 
 
 class SubscriptionAPIView(APIView):
+    serializer_class = SubscriptionSerializer
+    permission_classes = [IsAuthenticated]
+
     def post(self, *args, **kwargs):
         request = self.request
         user = request.user
