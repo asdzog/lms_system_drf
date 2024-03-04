@@ -10,5 +10,6 @@ class UrlValidator:
     def __call__(self, value):
         youtube_pattern = r'^https?://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)[\w-]+(\?\S*)?$'
         url = dict(value).get(self.field)
-        if not re.match(youtube_pattern, url) is None:
+        valid_url = re.match(youtube_pattern, url)
+        if not valid_url:
             raise ValidationError('Недопустимая ссылка на сторонний ресурс')
