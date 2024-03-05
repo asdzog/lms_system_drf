@@ -5,6 +5,8 @@ from courses.validators import UrlValidator
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    course = serializers.SlugRelatedField(slug_field='course_name', read_only=True)
+    owner = serializers.SlugRelatedField(slug_field='email', read_only=True)
 
     class Meta:
         model = Lesson
