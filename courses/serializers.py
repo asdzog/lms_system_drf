@@ -5,6 +5,8 @@ from courses.validators import UrlValidator
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    course = serializers.SlugRelatedField(slug_field='course_name', read_only=True)
+    owner = serializers.SlugRelatedField(slug_field='email', read_only=True)
 
     class Meta:
         model = Lesson
@@ -24,7 +26,7 @@ class CourseSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if not user.is_authenticated:
             return False
-        return user.subscriptions.filter(course=instance).exists()
+        return Subscription.objects.filter(user=user, course=instance).exists()
 
     class Meta:
         model = Course

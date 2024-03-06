@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, serializers, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -86,7 +86,8 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsOwner, ~IsModerator]
 
 
-class SubscriptionAPIView(APIView):
+class SubscriptionCreateAPIView(APIView):
+    """Create subscription over course id"""
     serializer_class = SubscriptionSerializer
     permission_classes = [IsAuthenticated]
 
@@ -110,3 +111,30 @@ class SubscriptionAPIView(APIView):
             # Возвращаем ответ в API
             return Response({'message': f'Вы успешно подписались на курс {course.course_name}.'},
                             status=status.HTTP_201_CREATED)
+
+
+class SubscriptionListAPIView(generics.ListAPIView):
+    """Display list of user's subscriptions"""
+    serializer_class = SubscriptionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Subscription.objects.all()
+        return queryset.filter(user=self.request.user)
+
+
+class SubscriptionDeleteAPIView(generics.DestroyAPIView):
+    """Delete user's subscription over its pk"""
+
+    queryset = Subscription.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        course_id = self.kwargs.get('pk')
+        user_id = self.request.user.pk
+
+        subscription = Subscription.objects.get(course_id=course_id, user_id=user_id)
+
+        if self.request.user == subscription.user:
+            self.perform_destroy(subscription)
+            return Response(status=status.HTTP_204_NO_CONTENT)
