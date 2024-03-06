@@ -26,7 +26,7 @@ class CourseSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if not user.is_authenticated:
             return False
-        return user.subscriptions.filter(course=instance).exists()
+        return Subscription.objects.filter(user=user, course=instance).exists()
 
     class Meta:
         model = Course
