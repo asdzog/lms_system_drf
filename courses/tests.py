@@ -143,7 +143,62 @@ class LessonTestCase(APITestCase):
                                       )
         print(response.status_code)
 
-        # self.assertEqual(
-        #     response.status_code,
-        #     status.HTTP_204_NO_CONTENT
-        # )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_204_NO_CONTENT
+        )
+
+class SubscriptionAPITest(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(
+            email='user@mail.net',
+            password='test_psw',
+            is_active=True,
+        )
+
+        self.user.set_password(self.user.password)
+        self.user.save()
+
+        access_token = str(RefreshToken.for_user(self.user).access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        self.course = Course.objects.create(
+            course_name='test_course',
+            course_description='test_description',
+            owner=self.user
+        )
+
+    def test_create_subscription(self):
+        """Test of creating a subscription"""
+        data = {
+            "user": self.user.pk,
+            "course": self.course.pk,
+        }
+
+        response = self.client.post(
+            reverse('courses:subscribe'),
+            data=data)
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_201_CREATED
+        )
+
+    def test_delete_subscription(self):
+        """Test of deleting a subscription"""
+        data = {
+            "user": self.user.pk,
+            "course": self.course.pk,
+        }
+
+        response = self.client.post(
+            reverse('courses:subscribe'),
+            data=data)
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_201_CREATED
+        )
+
