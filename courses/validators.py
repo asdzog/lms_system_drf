@@ -1,4 +1,3 @@
-import re
 from rest_framework.serializers import ValidationError
 
 
@@ -8,10 +7,8 @@ class UrlValidator:
         self.field = field
 
     def __call__(self, value):
-        youtube_pattern = r'^https?://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)[\w-]+(\?\S*)?$'
         url = dict(value).get(self.field)
         if not url:
             raise ValidationError('Не указана ссылка на урок')
-        valid_url = re.match(youtube_pattern, url)
-        if not valid_url:
+        elif 'youtube.com' not in url.lower() and 'youtu.be' not in url.lower():
             raise ValidationError('Указана недопустимая ссылка на сторонний ресурс')
