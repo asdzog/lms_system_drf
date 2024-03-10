@@ -160,3 +160,5 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+STRIPE_API_KEY = os.getenv('STRIPE_API_TOKEN')
