@@ -15,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-    payment_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Payment
