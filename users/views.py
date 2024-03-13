@@ -47,6 +47,8 @@ class PaymentCreateAPIView(generics.CreateAPIView):
                 "paid_course": course_item,
                 "amount": course_item.price,
                 "payment_method": "transfer_to_account",
+                "payment_session_id": session_id,
+                "payment_url": url_for_payment,
             }
             payment = Payment.objects.create(**data)
             payment.save()
