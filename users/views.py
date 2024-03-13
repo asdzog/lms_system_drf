@@ -33,8 +33,7 @@ class PaymentCreateAPIView(generics.CreateAPIView):
 
     def post(self, *args, **kwargs):
         user = self.request.user
-
-        course_id = self.request.data[0]["course_id"]
+        course_id = self.request.data["course_id"]
 
         course_item = get_object_or_404(Course, pk=course_id)
 
