@@ -1,7 +1,10 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, serializers
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+import datetime
 
 from courses import services
 from courses.models import Course
@@ -28,17 +31,27 @@ class PaymentCreateAPIView(generics.CreateAPIView):
     serializer_class = PaymentSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        course_id = self.kwargs.get('pk')
-        course = Course.objects.get(pk=course_id)
+    def post(self, *args, **kwargs):
         user = self.request.user
+        print(self.request.data)
+        course_id = int(self.request.data[0]["course_id"])
 
-        if Payment.objects.filter(user=user, course=course).exists():
-            raise serializers.ValidationError('Платеж уже произведен')
+        course_item = get_object_or_404(Course, pk=course_id)
+
+        if course_item:
+            url_for_payment, session_id = services.create_stripe_session(course_item)
+
+            data = {
+                "user": user,
+                "date": datetime.date.today(),
+                "paid_course": course_item,
+                "amount": course_item.price,
+                "payment_method": "transfer_to_account",
+            }
+            payment = Payment.objects.create(**data)
+            payment.save()
+            message = (f'Success! Stripe sessiond ID is: {session_id}.'
+                       f'URL for payment:\n {url_for_payment} ')
+            return Response({"message": message})
         else:
-            serializer.save(
-                user=user,
-                course=course,
-                payment_amount=course.price * 100,
-                payment_method='перевод'
-            )
+            return Response({"message": 'Error! Wrong course.'})

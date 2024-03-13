@@ -16,6 +16,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('create_user/', UserCreateAPIView.as_view(), name='create_user'),
-    path('buy_course/<int:pk>/', PaymentCreateAPIView.as_view(), name='buy_course'),
+    path('buy_course/', PaymentCreateAPIView.as_view(), name='buy_course'),
 
 ]
