@@ -51,7 +51,7 @@ class PaymentCreateAPIView(generics.CreateAPIView):
             payment = Payment.objects.create(**data)
             payment.save()
             message = (f'Success! Stripe sessiond ID is: {session_id}.'
-                       f'URL for payment:\n {url_for_payment} ')
+                       f'URL for payment: {url_for_payment} ')
             return Response({"message": message})
         else:
             return Response({"message": 'Error! Wrong course.'})
