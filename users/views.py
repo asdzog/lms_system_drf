@@ -8,6 +8,7 @@ import datetime
 
 from courses import services
 from courses.models import Course
+from courses.services import create_stripe_product
 from users.models import Payment
 from users.permissions import IsModerator, IsOwner
 from users.serializers import PaymentSerializer, UserSerializer
@@ -38,7 +39,7 @@ class PaymentCreateAPIView(generics.CreateAPIView):
         course_item = get_object_or_404(Course, pk=course_id)
 
         if course_item:
-            url_for_payment, session_id = services.create_stripe_session(course_item)
+            url_for_payment, session_id, product_id = services.create_stripe_session(course_item)
 
             data = {
                 "user": user,
@@ -48,6 +49,7 @@ class PaymentCreateAPIView(generics.CreateAPIView):
                 "payment_method": "transfer_to_account",
                 "payment_session_id": session_id,
                 "payment_url": url_for_payment,
+                "stripe_product_id": product_id,
             }
             payment = Payment.objects.create(**data)
             payment.save()

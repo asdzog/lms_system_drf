@@ -46,6 +46,7 @@ class Payment(models.Model):
     payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, verbose_name="способ оплаты")
     payment_session_id = (models.CharField(max_length=100, **NULLABLE, verbose_name='payment_session_id'))
     payment_url = (models.CharField(max_length=500, **NULLABLE, verbose_name='payment_url'))
+    stripe_product_id = (models.CharField(max_length=50, **NULLABLE, verbose_name='stripe_product_id'))
 
     def __str__(self):
         return f'{self.user}: {self.amount} ({self.date})'
