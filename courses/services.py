@@ -19,7 +19,7 @@ def create_stripe_price(amount, name):
 
 
 def create_stripe_session(course):
-    create_stripe_product(course)
+    product = create_stripe_product(course)
     stripe_price_id = create_stripe_price(course.price, course.course_name)
     stripe_session = stripe.checkout.Session.create(
         success_url="http://127.0.0.1:8000/",
@@ -29,4 +29,4 @@ def create_stripe_session(course):
         }],
         mode="payment",
         )
-    return stripe_session['url'], stripe_session['id']
+    return stripe_session['url'], stripe_session['id'], product['id']
