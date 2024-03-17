@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 
     'drf_yasg',
+    'django_celery_beat',
 
     'users',
     'courses',
@@ -165,3 +166,10 @@ STRIPE_API_KEY = os.getenv('STRIPE_API_TOKEN')
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'courses.tasks.my_task',  # путь к задаче
+        'schedule': timedelta(minutes=10),  # расписание выполнения задачи
+    },
+}
