@@ -169,7 +169,7 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 CELERY_BEAT_SCHEDULE = {
     'task-name': {
-        'task': 'courses.tasks.my_task',  # путь к задаче
-        'schedule': timedelta(minutes=10),  # расписание выполнения задачи
+        'task': 'users.tasks.check_users_activity',  # путь к задаче
+        'schedule': timedelta(days=7),  # периодичность, в данном случае - еженедельно
     },
 }
