@@ -1,14 +1,13 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, serializers
+from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import datetime
 
 from courses import services
 from courses.models import Course
-from courses.services import create_stripe_product
 from users.models import Payment
 from users.permissions import IsModerator, IsOwner
 from users.serializers import PaymentSerializer, UserSerializer
