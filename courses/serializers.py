@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from courses.models import Course, Lesson, Subscription
+from .tasks import send_course_update_notify
 from courses.validators import UrlValidator
 
 
@@ -27,6 +28,10 @@ class CourseSerializer(serializers.ModelSerializer):
         if not user.is_authenticated:
             return False
         return Subscription.objects.filter(user=user, course=instance).exists()
+
+    def perform_update(self, serializer):
+        updated_course = serializer.save()
+        send_course_update_notify.delay(updated_course.id)
 
     class Meta:
         model = Course
