@@ -88,9 +88,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE'),  # клиент СУБД
-        'NAME': os.getenv('DB_NAME'),  # Название базы данных
-        'USER': os.getenv('DB_USER'),  # Пользователь для подключения
-        'PASSWORD': os.getenv('DB_PSW'),  # Пароль для этого пользователя
+        'NAME': os.getenv('POSTGRES_DB'),  # Название базы данных
+        'USER': os.getenv('POSTGRES_USER'),  # Пользователь для подключения
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Пароль для этого пользователя
+        'PORT': os.getenv('POSTGRES_PORT'),
+        'HOST': os.getenv('POSTGRES_HOST'),
     }
 }
 
