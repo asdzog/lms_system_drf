@@ -25,7 +25,7 @@ services:
   app:
     build: .
     tty: true
-    command: sh -c 'python manage.py runserver 0.0.0.0:8000'
+    command: sh -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
     env_file:
       - .env
     ports:
@@ -41,6 +41,7 @@ services:
     tty: true
     command: celery -A config worker -l INFO
     depends_on:
+      - db
       - redis
       - app
 
@@ -49,6 +50,7 @@ services:
     tty: true
     command: celery -A config beat -l INFO -S django
     depends_on:
+      - db
       - redis
       - app
 
